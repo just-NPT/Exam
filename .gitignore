@@ -1,0 +1,12 @@
+json_to_ndjson.py
+output_file.csv
+output_file.csv.gz
+files.2023-12-18.json
+file.ndjson
+dags/file.csv
+dags/file.gzip
+downloaded_file.ndjson
+dags/__pycache__
+dags/key_file.json
+logs
+venv

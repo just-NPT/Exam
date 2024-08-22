@@ -1,0 +1,13 @@
+FROM apache/airflow:2.9.1
+
+USER airflow
+
+# Install dependencies
+RUN pip install --upgrade pip
+
+# Install required libraries
+RUN pip install gspread pandas SQLAlchemy
+RUN pip install ndjson
+RUN pip install apache-airflow-providers-google
+# RUN pip install great_expectations great-expectations-airflow
+# RUN pip install pymongo
