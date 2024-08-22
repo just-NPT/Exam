@@ -25,13 +25,13 @@ default_args = {
 dag = DAG(
     'download_task',
     default_args=default_args,
-    # description='A simple DAG to run a Python script',
     schedule_interval='0 0 * * *',
     start_date=days_ago(1),
     catchup=False, 
 )
 
 url = 'http://fake_api:5000/download_ndjson'
+connection_id =  'gcp-conn-id'
 
 BUCKET_NAME = 'test_bucket_120301'
 PROJECT_ID = 'healthy-life-433312-j8'
@@ -77,7 +77,7 @@ create_bucket = GCSCreateBucketOperator(
     task_id='create_bucket',
     bucket_name=BUCKET_NAME,
     location=LOCATION,
-    gcp_conn_id="gcp-conn-id",
+    gcp_conn_id=connection_id,
     trigger_rule=TriggerRule.ALL_FAILED,
 )
 
@@ -86,13 +86,13 @@ upload_task = LocalFilesystemToGCSOperator(
     src="{{ task_instance.xcom_pull(task_ids='csv_to_gzip_task', key='file_path') }}",
     dst='/tmp/' + "{{ task_instance.xcom_pull(task_ids='csv_to_gzip_task', key='file_name') }}",
     bucket=BUCKET_NAME,
-    gcp_conn_id='gcp-conn-id',
+    gcp_conn_id=connection_id,
     trigger_rule=TriggerRule.ONE_SUCCESS,
 )
 
 init_dataset_table = BigQueryExecuteQueryOperator(
     task_id='init_dataset_table_task',
-    gcp_conn_id='gcp-conn-id',
+    gcp_conn_id=connection_id,
     sql = "/sql/init_dataset_table.sql",
     params = {
         'project_id': PROJECT_ID,
@@ -103,7 +103,7 @@ init_dataset_table = BigQueryExecuteQueryOperator(
 
 load_data = BigQueryExecuteQueryOperator(
     task_id='load_data_task',
-    gcp_conn_id='gcp-conn-id',
+    gcp_conn_id=connection_id,
     sql = "/sql/load_data.sql",
     params = {
         'project_id': PROJECT_ID,
